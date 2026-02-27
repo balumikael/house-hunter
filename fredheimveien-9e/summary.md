@@ -3,6 +3,11 @@
 📍 **Fredheimveien 9E, Oslo (Høybråten)**
 📄 Source: `prospekt fredheimveien 9 e.pdf`
 
+### 🚆 From Oslo S (Central Station)
+| Mode | Route | Travel Time |
+|------|-------|-------------|
+| **Train** (L1) | Oslo S → Høybråten station, then 5 min walk | **~20 min total** |
+
 ---
 
 ## At a Glance

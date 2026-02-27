@@ -3,6 +3,12 @@
 📍 **Løkendalen 72, 2019 Skedsmokorset, Lillestrøm kommune**
 📄 Source: `lokendalen-72_salgsoppgave.pdf`
 
+### 🚆 From Oslo S (Central Station)
+| Mode | Route | Travel Time |
+|------|-------|-------------|
+| **Bus** (Line 400) | Oslo S / Bjørvika → Skedsmokorset, then walk | **~35 min total** |
+| **Train + Bus** | Oslo S → Lillestrøm (10 min, train) → Skedsmokorset (18 min, bus 340), then walk | **~35–40 min total** |
+
 ---
 
 ## At a Glance

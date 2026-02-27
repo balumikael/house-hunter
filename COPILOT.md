@@ -8,6 +8,7 @@ This repository contains Norwegian property sale prospects (prospekter) that we 
 2. **Move the PDF** into that subfolder
 3. **Extract text** from the PDF using PyPDF2 (`pip install PyPDF2` if needed)
 4. **Create `summary.md`** in the subfolder — translate all key information to English, structured as follows:
+   - **Transit from Oslo S** (at the very top, before "At a Glance"): a table showing public transport route(s) from Oslo Central Station to the property, including mode (train/bus/tram), line numbers, and total travel time. Look this up via web search.
    - **At a Glance** table: asking price, shared debt, transaction costs, total price, monthly fees, usable area, bedrooms, bathrooms, ownership type, plot area, year built, energy rating, pre-emptive rights, pets policy
    - **Property Description**: layout by floor/plan, key features
    - **Location & Transport**: distances to schools, train stations, amenities
