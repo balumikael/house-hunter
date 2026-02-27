@@ -21,7 +21,9 @@ This repository contains Norwegian property sale prospects (prospekter) that we 
    - **🔴 Red/Yellow Flags**: summarize concerns and risks
    - **🟢 Positives**: summarize highlights and selling points
 5. **Update `README.md`** — add the property to the prospects table
-6. Do **NOT** generate PDF summaries — Markdown only
+6. **Update `comparison.md`** — add the new property as a column in all comparison tables
+7. **Sync to Obsidian** — copy all `.md` files (summaries, comparison, README) to `/Users/balumicheal/obsidian/Personal/Houses/`, mirroring the folder structure (without PDFs)
+8. Do **NOT** generate PDF summaries — Markdown only
 
 ## Folder structure
 
