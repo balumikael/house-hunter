@@ -1,5 +1,7 @@
 # Løkendalen 72 — Semi-Detached House (Tomannsbolig)
 
+🟢 **Status: ACTIVE — For Sale**
+
 📍 **Løkendalen 72, 2019 Skedsmokorset, Lillestrøm kommune**
 🔗 [Finn.no listing](https://www.finn.no/realestate/homes/ad.html?finnkode=446995890)
 📄 Source: `lokendalen-72_salgsoppgave.pdf`
