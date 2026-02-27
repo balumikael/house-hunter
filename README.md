@@ -45,3 +45,4 @@ houses/
 |---|----------|-------------|------|--------|
 | 1 | Fredheimveien 9E, Oslo (Høybråten) | 7,550,000 NOK | 146 m² | [fredheimveien-9e](fredheimveien-9e/) |
 | 2 | Løkendalen 72, Skedsmokorset (Lillestrøm) | 6,990,000 NOK | 147 m² | [lokendalen-72](lokendalen-72/) |
+| 3 | Leanglia 16, Asker (Leangbukta) | 7,900,000 NOK | 166 m² | [leanglia-16](leanglia-16/) |
