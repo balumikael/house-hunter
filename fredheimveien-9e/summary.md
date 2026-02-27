@@ -1,6 +1,7 @@
 # Fredheimveien 9E — End-Unit Townhouse
 
 📍 **Fredheimveien 9E, Oslo (Høybråten)**
+🔗 [Finn.no listing](https://www.finn.no/realestate/homes/ad.html?finnkode=451924626)
 📄 Source: `prospekt fredheimveien 9 e.pdf`
 
 ### 🚆 From Oslo S (Central Station)
