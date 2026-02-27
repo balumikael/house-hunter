@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏠 House Hunter — Property Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --border: #2a2d3a;
+      --accent: #4f8ff7;
+      --green: #2ea043;
+      --red: #f85149;
+      --yellow: #d29922;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --card-hover: #22253a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #252a3a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    header p { color: var(--muted); font-size: 0.95rem; }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    nav button:hover, nav button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Property Cards */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 1.5rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .card-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .card-header h2 { font-size: 1.3rem; }
+    .card-header .location { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .status-active { background: rgba(46,160,67,0.15); color: var(--green); border: 1px solid var(--green); }
+    .status-sold { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid var(--red); }
+    .card-body { padding: 1.5rem; }
+    .card-body .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .stat { display: flex; flex-direction: column; }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 1.1rem; font-weight: 600; }
+    .stat-value.price { color: var(--accent); }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .tag.good { color: var(--green); border-color: var(--green); background: rgba(46,160,67,0.1); }
+    .tag.warn { color: var(--yellow); border-color: var(--yellow); background: rgba(210,153,34,0.1); }
+    .tag.bad { color: var(--red); border-color: var(--red); background: rgba(248,81,73,0.1); }
+    .card-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .card-footer a:hover { text-decoration: underline; }
+    .transit { color: var(--muted); font-size: 0.8rem; }
+
+    /* Detail View */
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .detail-back:hover { text-decoration: underline; }
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+    .detail-header h1 { font-size: 1.8rem; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .detail-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .detail-section.full { grid-column: 1 / -1; }
+    .detail-section h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    th { color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Comparison */
+    .compare-table { overflow-x: auto; }
+    .compare-table table { min-width: 700px; }
+    .compare-table th:first-child, .compare-table td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--card);
+      z-index: 1;
+      min-width: 160px;
+    }
+    .compare-table td:not(:first-child) { text-align: center; }
+    .compare-table th:not(:first-child) { text-align: center; }
+    .section-title {
+      font-size: 1.3rem;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    /* Flags */
+    .flags { margin-top: 1rem; }
+    .flag {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .flag.red { background: rgba(248,81,73,0.08); border-left: 3px solid var(--red); }
+    .flag.green { background: rgba(46,160,67,0.08); border-left: 3px solid var(--green); }
+    .flag-icon { flex-shrink: 0; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .cards { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .card-body .grid { grid-template-columns: 1fr; }
+      nav { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏠 House Hunter</h1>
+  <p>Norwegian Property Prospects — Translated & Compared</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('overview')">📋 Properties</button>
+  <button onclick="showSection('compare')">⚖️ Compare</button>
+  <button onclick="showSection('detail-fredheimveien')">🏡 Fredheimveien 9E</button>
+  <button onclick="showSection('detail-lokendalen')">🏡 Løkendalen 72</button>
+  <button onclick="showSection('detail-leanglia')">🏡 Leanglia 16</button>
+</nav>
+
+<main>
+
+  <!-- ===== OVERVIEW SECTION ===== -->
+  <div id="overview" class="section active">
+    <div class="cards">
+
+      <!-- Fredheimveien 9E Card -->
+      <div class="card" onclick="showSection('detail-fredheimveien')" style="cursor:pointer">
+        <div class="card-header">
+          <div>
+            <h2>Fredheimveien 9E</h2>
+            <div class="location">📍 Oslo (Høybråten)</div>
+          </div>
+          <span class="status status-active" id="status-fred">● Active</span>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="stat">
+              <span class="stat-label">Asking Price</span>
+              <span class="stat-value price">7,550,000 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Total Cost</span>
+              <span class="stat-value">~7,992,490 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Area (BRA-I)</span>
+              <span class="stat-value">127 m²</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Bedrooms</span>
+              <span class="stat-value">5</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Year Built</span>
+              <span class="stat-value">1969</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Monthly Fees</span>
+              <span class="stat-value">3,946 NOK</span>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag good">No TG3 Issues</span>
+            <span class="tag good">Renovated 2023–25</span>
+            <span class="tag good">Move-in Ready</span>
+            <span class="tag">End-unit Townhouse</span>
+            <span class="tag">Eierseksjon</span>
+            <span class="tag warn">Old Windows</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.finn.no/realestate/homes/ad.html?finnkode=451924626" target="_blank" onclick="event.stopPropagation()">View on Finn.no ↗</a>
+          <span class="transit">🚆 ~20 min from Oslo S</span>
+        </div>
+      </div>
+
+      <!-- Løkendalen 72 Card -->
+      <div class="card" onclick="showSection('detail-lokendalen')" style="cursor:pointer">
+        <div class="card-header">
+          <div>
+            <h2>Løkendalen 72</h2>
+            <div class="location">📍 Skedsmokorset, Lillestrøm</div>
+          </div>
+          <span class="status status-active" id="status-lok">● Active</span>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="stat">
+              <span class="stat-label">Asking Price</span>
+              <span class="stat-value price">6,990,000 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Total Cost</span>
+              <span class="stat-value">~7,166,130 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Area (BRA-I)</span>
+              <span class="stat-value">147 m²</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Bedrooms</span>
+              <span class="stat-value">3</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Year Built</span>
+              <span class="stat-value">2001</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Monthly Fees</span>
+              <span class="stat-value">None ✓</span>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag bad">TG3 Bathroom</span>
+            <span class="tag good">No Monthly Fees</span>
+            <span class="tag good">Freehold</span>
+            <span class="tag">Semi-detached</span>
+            <span class="tag warn">Marine Clay Area</span>
+            <span class="tag good">Energy C</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.finn.no/realestate/homes/ad.html?finnkode=446995890" target="_blank" onclick="event.stopPropagation()">View on Finn.no ↗</a>
+          <span class="transit">🚌 ~35 min from Oslo S</span>
+        </div>
+      </div>
+
+      <!-- Leanglia 16 Card -->
+      <div class="card" onclick="showSection('detail-leanglia')" style="cursor:pointer">
+        <div class="card-header">
+          <div>
+            <h2>Leanglia 16</h2>
+            <div class="location">📍 Asker (Leangbukta)</div>
+          </div>
+          <span class="status status-active" id="status-lea">● Active</span>
+        </div>
+        <div class="card-body">
+          <div class="grid">
+            <div class="stat">
+              <span class="stat-label">Asking Price</span>
+              <span class="stat-value price">7,900,000 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Total Cost</span>
+              <span class="stat-value">~8,094,840 NOK</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Area (BRA-I)</span>
+              <span class="stat-value">166 m²</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Bedrooms</span>
+              <span class="stat-value">3</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Year Built</span>
+              <span class="stat-value">1984</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Monthly Fees</span>
+              <span class="stat-value">None (annual)</span>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag bad">TG3 Both Bathrooms</span>
+            <span class="tag bad">Energy F</span>
+            <span class="tag good">Oslofjord Views</span>
+            <span class="tag good">Kitchen 2022</span>
+            <span class="tag">Townhouse</span>
+            <span class="tag warn">Unauthorized Mods</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="https://www.finn.no/realestate/homes/ad.html?finnkode=447200435" target="_blank" onclick="event.stopPropagation()">View on Finn.no ↗</a>
+          <span class="transit">🚆 ~35-40 min from Oslo S</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== COMPARISON SECTION ===== -->
+  <div id="compare" class="section">
+    <h2 class="section-title">Overview</h2>
+    <div class="detail-section compare-table">
+      <table>
+        <tr><th></th><th>Fredheimveien 9E</th><th>Løkendalen 72</th><th>Leanglia 16</th></tr>
+        <tr><td><strong>Location</strong></td><td>Oslo (Høybråten)</td><td>Skedsmokorset (Lillestrøm)</td><td>Asker (Leangbukta)</td></tr>
+        <tr><td><strong>Type</strong></td><td>End-unit townhouse</td><td>Semi-detached (vertical split)</td><td>Townhouse (rekkehus)</td></tr>
+        <tr><td><strong>Asking Price</strong></td><td>7,550,000 NOK</td><td>6,990,000 NOK</td><td>7,900,000 NOK</td></tr>
+        <tr><td><strong>Total Price</strong></td><td>~7,992,490 NOK</td><td>~7,166,130 NOK</td><td>~8,094,840 NOK</td></tr>
+        <tr><td><strong>Monthly Fees</strong></td><td>3,946 NOK</td><td>None ✅</td><td>None (annual levy)</td></tr>
+        <tr><td><strong>Internal Area</strong></td><td>127 m²</td><td>147 m²</td><td>166 m² ✅</td></tr>
+        <tr><td><strong>Total BRA</strong></td><td>146 m²</td><td>173 m²</td><td>166 m²</td></tr>
+        <tr><td><strong>Terraces</strong></td><td>40 m²</td><td>29 m² (+50 m²)</td><td>29 m²</td></tr>
+        <tr><td><strong>Plot</strong></td><td>2,559 m² (shared)</td><td>316 m² (owned)</td><td>118 m² (owned)</td></tr>
+        <tr><td><strong>Bedrooms</strong></td><td>5</td><td>3</td><td>3</td></tr>
+        <tr><td><strong>Year Built</strong></td><td>1969</td><td>2001</td><td>1984</td></tr>
+        <tr><td><strong>Ownership</strong></td><td>Eierseksjon</td><td>Freehold (Selveier)</td><td>Freehold (Selveier)</td></tr>
+        <tr><td><strong>Energy Rating</strong></td><td>D (Yellow)</td><td>C (Green) ✅</td><td>F (Orange) 🔴</td></tr>
+        <tr><td><strong>Garage + EV</strong></td><td>Yes</td><td>Yes</td><td>Yes (no EV)</td></tr>
+        <tr><td><strong>Transit to Oslo S</strong></td><td>~20 min (train)</td><td>~35 min (bus/train)</td><td>~35-40 min (train+bus)</td></tr>
+        <tr><td><strong>Views</strong></td><td>—</td><td>—</td><td>Oslofjord ✅</td></tr>
+      </table>
+    </div>
+
+    <h2 class="section-title">Financial</h2>
+    <div class="detail-section compare-table">
+      <table>
+        <tr><th></th><th>Fredheimveien 9E</th><th>Løkendalen 72</th><th>Leanglia 16</th></tr>
+        <tr><td><strong>Asking Price</strong></td><td>7,550,000</td><td>6,990,000</td><td>7,900,000</td></tr>
+        <tr><td><strong>Shared Debt</strong></td><td>226,833</td><td>None ✅</td><td>None ✅</td></tr>
+        <tr><td><strong>Document Duty</strong></td><td>194,400</td><td>174,750</td><td>193,750</td></tr>
+        <tr><td><strong>Total to Pay</strong></td><td>~7,992,490</td><td>~7,166,130</td><td>~8,094,840</td></tr>
+        <tr><td><strong>Price per m² (BRA-I)</strong></td><td>~59,449 NOK</td><td>~47,551 NOK ✅</td><td>~47,590 NOK</td></tr>
+        <tr><td><strong>Monthly Cost</strong></td><td>3,946 NOK</td><td>~2,222 NOK ✅</td><td>~3,776 NOK</td></tr>
+        <tr><td><strong>Shared Debt Interest</strong></td><td>8.10% ⚠️</td><td>N/A ✅</td><td>N/A ✅</td></tr>
+      </table>
+    </div>
+
+    <h2 class="section-title">Condition</h2>
+    <div class="detail-section compare-table">
+      <table>
+        <tr><th></th><th>Fredheimveien 9E</th><th>Løkendalen 72</th><th>Leanglia 16</th></tr>
+        <tr><td><strong>TG3 Issues</strong></td><td>None ✅</td><td>2 (bathroom + fire ext.) 🔴</td><td>3 (both baths + laundry) 🔴🔴</td></tr>
+        <tr><td><strong>TG2 Issues</strong></td><td>14 items</td><td>19 items</td><td>14 items</td></tr>
+        <tr><td><strong>Bathroom</strong></td><td>Good (2015) ✅</td><td>Needs full reno 🔴</td><td>BOTH need full reno 🔴🔴</td></tr>
+        <tr><td><strong>Kitchen</strong></td><td>New (2023) ✅</td><td>New (2020) ✅</td><td>New (2022) ✅</td></tr>
+        <tr><td><strong>Roof</strong></td><td>Not inspected ⚠️</td><td>Attic mold 🔴</td><td>Past half lifespan ⚠️</td></tr>
+        <tr><td><strong>Foundation</strong></td><td>Some cracks ⚠️</td><td>Cracks + marine clay 🔴</td><td>Diagonal crack ⚠️</td></tr>
+        <tr><td><strong>Drainage</strong></td><td>New (2024) ✅</td><td>Past half lifespan ⚠️</td><td>Original 1984 🔴</td></tr>
+        <tr><td><strong>Windows/Doors</strong></td><td>Old (1986/1990) 🔴</td><td>Past half lifespan ⚠️</td><td>1F new ✅ / basement old 🔴</td></tr>
+        <tr><td><strong>Radon</strong></td><td>Measured — safe ✅</td><td>Not measured ⚠️</td><td>Not measured ⚠️</td></tr>
+      </table>
+    </div>
+
+    <h2 class="section-title">Renovation Needed</h2>
+    <div class="detail-section compare-table">
+      <table>
+        <tr><th></th><th>Fredheimveien 9E</th><th>Løkendalen 72</th><th>Leanglia 16</th></tr>
+        <tr><td><strong>Immediate</strong></td><td>None — move-in ready ✅</td><td>Bathroom reno (~200–400K), railing fixes 🔴</td><td>2 bath renos + laundry (~300–600K+), permit legalization 🔴🔴</td></tr>
+        <tr><td><strong>Medium-term</strong></td><td>Window/door replacement</td><td>Windows/doors, attic mold, grading</td><td>Basement windows, drainage, grading, roof</td></tr>
+        <tr><td><strong>Long-term</strong></td><td>Drain pipe replacement</td><td>Drainage, pipes, gutters</td><td>Wall cladding, pipes</td></tr>
+      </table>
+    </div>
+
+    <h2 class="section-title">Bottom Line</h2>
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>Fredheimveien 9E — "Move-in ready, premium price"</h3>
+        <div class="flags">
+          <div class="flag green"><span class="flag-icon">✅</span> Massively renovated 2023–2025, no immediate work needed</div>
+          <div class="flag green"><span class="flag-icon">✅</span> 5 bedrooms, 17 min to Oslo S by train</div>
+          <div class="flag red"><span class="flag-icon">⚠️</span> Higher total cost (~8M), ongoing monthly fees (3,946/mo)</div>
+          <div class="flag red"><span class="flag-icon">⚠️</span> Shared debt at 8.10% interest, old windows/pipes</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>Løkendalen 72 — "Lower price, work needed"</h3>
+        <div class="flags">
+          <div class="flag green"><span class="flag-icon">✅</span> ~830K cheaper total, no monthly fees, better energy rating</div>
+          <div class="flag green"><span class="flag-icon">✅</span> Freehold with owned plot (316 m²), garage with EV charger</div>
+          <div class="flag red"><span class="flag-icon">🔴</span> Bathroom needs full renovation (TG3), attic mold issues</div>
+          <div class="flag red"><span class="flag-icon">🔴</span> Foundation concerns in marine clay area, no radon test, only 3 beds</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>Leanglia 16 — "Best views, most work needed"</h3>
+        <div class="flags">
+          <div class="flag green"><span class="flag-icon">✅</span> Stunning Oslofjord views, excellent Asker location</div>
+          <div class="flag green"><span class="flag-icon">✅</span> Largest area (166 m²), no property tax, living areas renovated 2022</div>
+          <div class="flag red"><span class="flag-icon">🔴</span> BOTH bathrooms + laundry need full renovation (3× TG3)</div>
+          <div class="flag red"><span class="flag-icon">🔴</span> Energy F (worst), unauthorized mods, no seller insurance, no radon</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FREDHEIMVEIEN DETAIL ===== -->
+  <div id="detail-fredheimveien" class="section">
+    <a class="detail-back" onclick="showSection('overview')">← Back to Properties</a>
+    <div class="detail-header">
+      <div>
+        <h1>Fredheimveien 9E</h1>
+        <p style="color:var(--muted)">📍 Fredheimveien 9E, Oslo (Høybråten) · End-Unit Townhouse</p>
+        <p style="margin-top:0.5rem"><a href="https://www.finn.no/realestate/homes/ad.html?finnkode=451924626" target="_blank" style="color:var(--accent)">View on Finn.no ↗</a></p>
+      </div>
+      <span class="status status-active">● Active</span>
+    </div>
+
+    <!-- Transit -->
+    <div class="detail-section" style="margin-bottom:2rem">
+      <h3>🚆 Transit from Oslo S</h3>
+      <table>
+        <tr><th>Mode</th><th>Route</th><th>Time</th></tr>
+        <tr><td>Train (L1)</td><td>Oslo S → Høybråten station, then 5 min walk</td><td><strong>~20 min</strong></td></tr>
+      </table>
+    </div>
+
+    <!-- Key Stats -->
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>💰 Financial</h3>
+        <table>
+          <tr><td>Asking Price</td><td><strong>7,550,000 NOK</strong></td></tr>
+          <tr><td>Shared Debt</td><td>226,833 NOK</td></tr>
+          <tr><td>Document Duty (2.5%)</td><td>194,400 NOK</td></tr>
+          <tr><td>Total incl. costs</td><td><strong>~7,992,490 NOK</strong></td></tr>
+          <tr><td>Monthly Fees</td><td>3,946 NOK</td></tr>
+          <tr><td>Shared Debt Interest</td><td>8.10% ⚠️</td></tr>
+          <tr><td>Tax Value (primary)</td><td>1,346,071 NOK</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3>📐 Property Details</h3>
+        <table>
+          <tr><td>Internal Area (BRA-I)</td><td><strong>127 m²</strong></td></tr>
+          <tr><td>Total Usable (BRA)</td><td>146 m²</td></tr>
+          <tr><td>External Area</td><td>19 m² (basement storage)</td></tr>
+          <tr><td>Terraces</td><td>40 m²</td></tr>
+          <tr><td>Bedrooms</td><td>5</td></tr>
+          <tr><td>Bathrooms</td><td>1 bath + 1 toilet room</td></tr>
+          <tr><td>Year Built</td><td>1969</td></tr>
+          <tr><td>Energy Rating</td><td>D (Yellow)</td></tr>
+          <tr><td>Ownership</td><td>Eierseksjon (sectioned)</td></tr>
+          <tr><td>Plot</td><td>2,559 m² (shared)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🏠 Description</h3>
+      <p style="margin-bottom:1rem">An <strong>end-unit townhouse</strong> significantly upgraded in 2023–2025 with a new kitchen, new heating solution, and modern materials — ready to move in.</p>
+      <p style="margin-bottom:0.5rem"><strong>Layout (4 half-levels + basement):</strong></p>
+      <ul style="padding-left:1.5rem; color:var(--muted); font-size:0.9rem; line-height:1.8">
+        <li><strong>Plan 1 & 2:</strong> Entrance, bathroom, hallway, toilet room, 4 bedrooms. Two bedrooms access 29 m² west-facing terrace.</li>
+        <li><strong>Plan 3 & 4:</strong> Living/dining room, 1 bedroom, kitchen. Living room accesses 11 m² west-facing terrace.</li>
+        <li><strong>Basement:</strong> Storage room (19 m²) with external access. Separate tool shed (7 m²).</li>
+      </ul>
+      <div class="tags" style="margin-top:1rem">
+        <span class="tag good">New Kitchen (2023)</span>
+        <span class="tag good">Heat Pump</span>
+        <span class="tag good">Wood Stove</span>
+        <span class="tag good">EV Charger</span>
+        <span class="tag good">Parquet Floors</span>
+        <span class="tag">2 Terraces (40 m²)</span>
+        <span class="tag">Private Garden</span>
+        <span class="tag">Garage</span>
+      </div>
+    </div>
+
+    <!-- Renovation History -->
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🔧 Renovation History (2023–2025)</h3>
+      <table>
+        <tr><th>Year</th><th>Work Done</th></tr>
+        <tr><td>2023</td><td>Full kitchen renovation, living room (ceiling/walls/floor), all rooms painted, facade renovation + 5cm insulation, new front door, wood stove, heat pump, new floors (2 bedrooms + hallway), new toilet room, new terrace, complete drainage, crawl space insulation, new wardrobes, balcony membrane, skylight</td></tr>
+        <tr><td>2024</td><td>Facade completion, full drainage project (rock blasting, new drainage pit, asphalting), new bedroom window, new exterior door, toilet room conversion (municipality-approved), all windows scraped and painted</td></tr>
+        <tr><td>Electrical</td><td>~1990: 3-phase upgrade. 2015: Bathroom circuits. 2023: Heat pump + EV charger + kitchen circuits</td></tr>
+      </table>
+    </div>
+
+    <!-- Condition -->
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>⚠️ TG2 Issues (14 items)</h3>
+        <table>
+          <tr><td>Bathroom floor</td><td>Hollow tiles</td></tr>
+          <tr><td>Toilet ventilation</td><td>No air gap</td></tr>
+          <tr><td>Below-ground rooms</td><td>Moisture risk</td></tr>
+          <tr><td>Crawl space</td><td>Risk construction</td></tr>
+          <tr><td>Floor levelness</td><td>Up to 23mm skew</td></tr>
+          <tr><td>Water shutoff</td><td>Outside unit</td></tr>
+          <tr><td>Cast iron pipes</td><td>Past service life</td></tr>
+          <tr><td>Windows (pre-2009)</td><td>Need replacement</td></tr>
+          <tr><td>Doors</td><td>Need upgrading</td></tr>
+          <tr><td>Roof</td><td>Not inspected</td></tr>
+          <tr><td>Foundation walls</td><td>Cracks observed</td></tr>
+          <tr><td>Underground pipes</td><td>End of lifespan</td></tr>
+          <tr><td>Freestanding structures</td><td>Age risk</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3 style="color:var(--green)">✅ TG3 Issues: None</h3>
+        <p style="color:var(--muted); margin-bottom:1.5rem">No serious deviations found in the condition report.</p>
+        <h3>📋 Key Disclosures</h3>
+        <table>
+          <tr><td>Bathroom leak</td><td>2015 — full reno done</td></tr>
+          <tr><td>Terrace leak</td><td>2023 — fully fixed</td></tr>
+          <tr><td>Drainage</td><td>Redone 2024 — resolved</td></tr>
+          <tr><td>Radon</td><td>40 / 37 Bq/m³ — safe ✅</td></tr>
+          <tr><td>Pests</td><td>Rats in neighbor unit (resolved)</td></tr>
+          <tr><td>Asbestos</td><td>1 pipe removed (DIY)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Flags -->
+    <div class="detail-grid" style="margin-top:2rem">
+      <div class="detail-section">
+        <h3>🔴 Red / Yellow Flags</h3>
+        <div class="flags">
+          <div class="flag red"><span>⚠️</span> High shared debt interest rate (8.10%)</div>
+          <div class="flag red"><span>⚠️</span> Cast iron drain pipes past service life</div>
+          <div class="flag red"><span>⚠️</span> Windows and doors from 1986/1990</div>
+          <div class="flag red"><span>⚠️</span> Floor skewness up to 23mm</div>
+          <div class="flag red"><span>⚠️</span> Crawl space — moisture risk</div>
+          <div class="flag red"><span>⚠️</span> Foundation cracks — cause unknown</div>
+          <div class="flag red"><span>⚠️</span> Roof not inspected</div>
+          <div class="flag red"><span>⚠️</span> Asbestos removal was DIY</div>
+          <div class="flag red"><span>⚠️</span> Association costs exceeded income in 2024</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>🟢 Positives</h3>
+        <div class="flags">
+          <div class="flag green"><span>✅</span> Massive renovations 2023-2025</div>
+          <div class="flag green"><span>✅</span> Great location — 17 min to Oslo S</div>
+          <div class="flag green"><span>✅</span> 5 bedrooms, flexible use</div>
+          <div class="flag green"><span>✅</span> 40 m² terraces + garden</div>
+          <div class="flag green"><span>✅</span> Garage with EV charger</div>
+          <div class="flag green"><span>✅</span> No TG3 issues</div>
+          <div class="flag green"><span>✅</span> Low radon levels</div>
+          <div class="flag green"><span>✅</span> Pets allowed, long-term rental OK</div>
+          <div class="flag green"><span>✅</span> New kitchen, heat pump, wood stove</div>
+          <div class="flag green"><span>✅</span> Complete drainage resolved water issues</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent -->
+    <div class="detail-section full" style="margin-top:2rem">
+      <h3>👤 Agent</h3>
+      <p><strong>Kjerstin Falkum</strong> — Partner / Real Estate Agent (MNEF)<br>
+      📞 92 20 47 07 · ✉️ kf@schalapartners.no<br>
+      Schala & Partners Eiendomsmegling, Trondheimsveien 111A, 0565 Oslo</p>
+    </div>
+  </div>
+
+  <!-- ===== LØKENDALEN DETAIL ===== -->
+  <div id="detail-lokendalen" class="section">
+    <a class="detail-back" onclick="showSection('overview')">← Back to Properties</a>
+    <div class="detail-header">
+      <div>
+        <h1>Løkendalen 72</h1>
+        <p style="color:var(--muted)">📍 Løkendalen 72, 2019 Skedsmokorset, Lillestrøm · Semi-Detached House</p>
+        <p style="margin-top:0.5rem"><a href="https://www.finn.no/realestate/homes/ad.html?finnkode=446995890" target="_blank" style="color:var(--accent)">View on Finn.no ↗</a></p>
+      </div>
+      <span class="status status-active">● Active</span>
+    </div>
+
+    <!-- Transit -->
+    <div class="detail-section" style="margin-bottom:2rem">
+      <h3>🚆 Transit from Oslo S</h3>
+      <table>
+        <tr><th>Mode</th><th>Route</th><th>Time</th></tr>
+        <tr><td>Bus (Line 400)</td><td>Oslo S / Bjørvika → Skedsmokorset, then walk</td><td><strong>~35 min</strong></td></tr>
+        <tr><td>Train + Bus</td><td>Oslo S → Lillestrøm (10 min) → Skedsmokorset (18 min, bus 340)</td><td><strong>~35–40 min</strong></td></tr>
+      </table>
+    </div>
+
+    <!-- Key Stats -->
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>💰 Financial</h3>
+        <table>
+          <tr><td>Asking Price</td><td><strong>6,990,000 NOK</strong></td></tr>
+          <tr><td>Shared Debt</td><td>None ✅</td></tr>
+          <tr><td>Document Duty (2.5%)</td><td>174,750 NOK</td></tr>
+          <tr><td>Total incl. costs</td><td><strong>~7,166,130 NOK</strong></td></tr>
+          <tr><td>Monthly Fees</td><td>None (freehold) ✅</td></tr>
+          <tr><td>Municipal Fees</td><td>25,028 NOK/year</td></tr>
+          <tr><td>Property Tax</td><td>1,640 NOK/year</td></tr>
+          <tr><td>Tax Value (primary)</td><td>1,579,945 NOK</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3>📐 Property Details</h3>
+        <table>
+          <tr><td>Internal Area (BRA-I)</td><td><strong>147 m²</strong></td></tr>
+          <tr><td>Total Usable (BRA)</td><td>173 m²</td></tr>
+          <tr><td>External Area</td><td>26 m² (garage)</td></tr>
+          <tr><td>Terraces</td><td>29 m² (+50 m²)</td></tr>
+          <tr><td>Bedrooms</td><td>3</td></tr>
+          <tr><td>Bathrooms</td><td>1 bath + 1 toilet + 1 laundry</td></tr>
+          <tr><td>Year Built</td><td>2001</td></tr>
+          <tr><td>Energy Rating</td><td>C (Light Green) ✅</td></tr>
+          <tr><td>Ownership</td><td>Freehold (Selveier)</td></tr>
+          <tr><td>Plot</td><td>316 m² (owned)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🏠 Description</h3>
+      <p style="margin-bottom:1rem">An attractive <strong>half of a vertically split semi-detached house</strong>, located at the end of a cul-de-sac. Bright, spacious living areas with cozy atmosphere. Comes with garage and large sunny outdoor area.</p>
+      <p style="margin-bottom:0.5rem"><strong>Layout (2 floors):</strong></p>
+      <ul style="padding-left:1.5rem; color:var(--muted); font-size:0.9rem; line-height:1.8">
+        <li><strong>1st Floor (76 m²):</strong> Entrance, living room with fireplace, kitchen (KVIK 2020), toilet room, storage, walk-in wardrobe.</li>
+        <li><strong>Lower Floor (71 m²):</strong> 3 bedrooms (master with walk-in wardrobe), bathroom, laundry room, dressing room.</li>
+        <li><strong>Garage (26 m²):</strong> Insulated storage room + loft, EV charger installed.</li>
+      </ul>
+      <div class="tags" style="margin-top:1rem">
+        <span class="tag good">KVIK Kitchen (2020)</span>
+        <span class="tag good">Heat Pump (2023)</span>
+        <span class="tag good">EV Charger</span>
+        <span class="tag">Fireplace</span>
+        <span class="tag">Hydronic Heating</span>
+        <span class="tag">Walk-in Wardrobes</span>
+        <span class="tag">50 m² Terrace</span>
+        <span class="tag">Cul-de-sac</span>
+      </div>
+    </div>
+
+    <!-- Renovation History -->
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🔧 Renovation / Upgrade History</h3>
+      <table>
+        <tr><th>Year</th><th>Work</th><th>By</th></tr>
+        <tr><td>2020</td><td>KVIK kitchen installed</td><td>Professional</td></tr>
+        <tr><td>2020</td><td>Custom walk-in wardrobe by entrance</td><td>Professional</td></tr>
+        <tr><td>2023</td><td>Custom walk-in wardrobe in master bedroom</td><td>Professional</td></tr>
+        <tr><td>2023</td><td>New heat pump (NEKAS)</td><td>Professional</td></tr>
+        <tr><td>2023</td><td>Bathtub replaced</td><td>Professional</td></tr>
+        <tr><td>2024</td><td>Ventilation system cleaned/inspected</td><td>Professional</td></tr>
+        <tr><td>—</td><td>Kitchen electrical + ceiling/attic lights</td><td>Professional</td></tr>
+        <tr><td>—</td><td>EV charger installed (EDA)</td><td>Professional</td></tr>
+        <tr><td>—</td><td>11 cracked roof tiles + chimney platform</td><td>Professional</td></tr>
+        <tr><td>—</td><td>New concrete garage floor</td><td>Professional</td></tr>
+        <tr><td>—</td><td>Facade painting, rotten wood replaced, patio</td><td>DIY</td></tr>
+      </table>
+      <div class="flag red" style="margin-top:1rem"><span>⚡</span> <strong>Storm "Hans" (Aug 2023):</strong> Water intrusion in lower floor. Floors + walls replaced. Insurance claim (Gjensidige), repairs by Belfor.</div>
+    </div>
+
+    <!-- Condition -->
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>⚠️ TG2 Issues (19 items)</h3>
+        <table>
+          <tr><td>Roof covering</td><td>Moisture marks</td></tr>
+          <tr><td>Gutters/flashings</td><td>No snow guards, aging</td></tr>
+          <tr><td>Wall cladding</td><td>Missing air gap</td></tr>
+          <tr><td>Attic/roof</td><td>Mold, condensation</td></tr>
+          <tr><td>Windows</td><td>Past half lifespan</td></tr>
+          <tr><td>Doors</td><td>Past half lifespan</td></tr>
+          <tr><td>Terrace railing</td><td>Not code-compliant, loose</td></tr>
+          <tr><td>Below-ground rooms</td><td>Moisture risk</td></tr>
+          <tr><td>Interior stairs</td><td>Railing too low, loose</td></tr>
+          <tr><td>Interior doors</td><td>Rubbing against frames</td></tr>
+          <tr><td>Water pipes</td><td>Corrosion, aging</td></tr>
+          <tr><td>Drain pipes</td><td>Past half lifespan</td></tr>
+          <tr><td>Ventilation</td><td>No door air gaps</td></tr>
+          <tr><td>Electrical</td><td>Simplified inspection only</td></tr>
+          <tr><td>Drainage</td><td>Past half lifespan</td></tr>
+          <tr><td>Foundation</td><td>Diagonal cracks</td></tr>
+          <tr><td>Terrain grading</td><td>Insufficient slope</td></tr>
+          <tr><td>Toilet room</td><td>Poor ventilation, aging</td></tr>
+          <tr><td>Laundry room</td><td>Aging, no membrane docs</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3 style="color:var(--red)">🔴 TG3 Issues (2 items)</h3>
+        <table>
+          <tr><td><strong>Fire safety</strong></td><td>Extinguisher >10 years old — must replace</td></tr>
+          <tr><td><strong>Bathroom</strong></td><td>MAJOR — needs full renovation. Mold, cracked tiles, counter-slope, poor drainage, no membrane docs, aging fixtures</td></tr>
+        </table>
+
+        <h3 style="margin-top:1.5rem">📋 Key Disclosures</h3>
+        <table>
+          <tr><td>Bathroom issues</td><td>Cracks + black mold</td></tr>
+          <tr><td>Storm "Hans"</td><td>2023 — repaired by Belfor</td></tr>
+          <tr><td>Foundation</td><td>Small superficial cracks</td></tr>
+          <tr><td>Pests</td><td>Silverfish present</td></tr>
+          <tr><td>Radon</td><td>NOT measured ⚠️</td></tr>
+          <tr><td>Marine clay</td><td>Very high probability ⚠️</td></tr>
+          <tr><td>Historical land</td><td>Former landfill area</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Flags -->
+    <div class="detail-grid" style="margin-top:2rem">
+      <div class="detail-section">
+        <h3>🔴 Red / Yellow Flags</h3>
+        <div class="flags">
+          <div class="flag red"><span>🔴</span> Bathroom needs FULL renovation (TG3) — ~200–400K+ NOK</div>
+          <div class="flag red"><span>🔴</span> Attic mold, condensation, elevated moisture</div>
+          <div class="flag red"><span>🔴</span> Foundation cracks in marine clay area</div>
+          <div class="flag red"><span>⚠️</span> Terrain slopes toward house — water pooling risk</div>
+          <div class="flag red"><span>⚠️</span> Storm "Hans" water damage (2023, repaired)</div>
+          <div class="flag red"><span>⚠️</span> Drainage past half lifespan</div>
+          <div class="flag red"><span>⚠️</span> Wall cladding lacks proper air gap</div>
+          <div class="flag red"><span>⚠️</span> No radon measurement (basement bedrooms!)</div>
+          <div class="flag red"><span>⚠️</span> Terrace + stair railings not code-compliant</div>
+          <div class="flag red"><span>⚠️</span> Living room ceiling 2.37m (below code 2.40m)</div>
+          <div class="flag red"><span>⚠️</span> Historical landfill — contamination unknown</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>🟢 Positives</h3>
+        <div class="flags">
+          <div class="flag green"><span>✅</span> Attractive price — 6.99M for 147 m² freehold</div>
+          <div class="flag green"><span>✅</span> No monthly common fees</div>
+          <div class="flag green"><span>✅</span> Good energy rating (C)</div>
+          <div class="flag green"><span>✅</span> Modern KVIK kitchen (2020)</div>
+          <div class="flag green"><span>✅</span> Custom walk-in wardrobes (2020 + 2023)</div>
+          <div class="flag green"><span>✅</span> New heat pump (2023)</div>
+          <div class="flag green"><span>✅</span> Garage with EV charger</div>
+          <div class="flag green"><span>✅</span> ~50 m² terrace with good sun</div>
+          <div class="flag green"><span>✅</span> Cul-de-sac, schools walking distance</div>
+          <div class="flag green"><span>✅</span> 316 m² owned plot</div>
+          <div class="flag green"><span>✅</span> Seller's warranty insurance in place</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent -->
+    <div class="detail-section full" style="margin-top:2rem">
+      <h3>👤 Agent</h3>
+      <p><strong>Malin Goa</strong> — Sales Manager / Real Estate Agent / Partner<br>
+      📞 480 09 310 · ✉️ m.goa@nordvikbolig.no<br>
+      Nordvik Lillestrøm, Landstads gate 57, 2000 Lillestrøm</p>
+    </div>
+  </div>
+
+  <!-- ===== LEANGLIA DETAIL ===== -->
+  <div id="detail-leanglia" class="section">
+    <a class="detail-back" onclick="showSection('overview')">← Back to Properties</a>
+    <div class="detail-header">
+      <div>
+        <h1>Leanglia 16</h1>
+        <p style="color:var(--muted)">📍 Leanglia 16, 1387 Asker (Leangbukta) · Townhouse (Rekkehus)</p>
+        <p style="margin-top:0.5rem"><a href="https://www.finn.no/realestate/homes/ad.html?finnkode=447200435" target="_blank" style="color:var(--accent)">View on Finn.no ↗</a></p>
+      </div>
+      <span class="status status-active">● Active</span>
+    </div>
+
+    <div class="detail-section" style="margin-bottom:2rem">
+      <h3>🚆 Transit from Oslo S</h3>
+      <table>
+        <tr><th>Mode</th><th>Route</th><th>Time</th></tr>
+        <tr><td>Train + Bus</td><td>Oslo S → Asker station (~20 min, Vy train) → local bus to Leangbukta (~10 min)</td><td><strong>~35–40 min</strong></td></tr>
+      </table>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>💰 Financial</h3>
+        <table>
+          <tr><td>Asking Price</td><td><strong>7,900,000 NOK</strong></td></tr>
+          <tr><td>Shared Debt</td><td>None ✅</td></tr>
+          <tr><td>Document Duty (2.5%)</td><td>193,750 NOK</td></tr>
+          <tr><td>Total incl. costs</td><td><strong>~8,094,840 NOK</strong></td></tr>
+          <tr><td>Annual HOA Fee</td><td>18,663 NOK</td></tr>
+          <tr><td>Municipal Fees</td><td>26,644 NOK/year</td></tr>
+          <tr><td>Property Tax</td><td>None (Asker) ✅</td></tr>
+          <tr><td>Tax Value (primary)</td><td>1,706,511 NOK</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3>📐 Property Details</h3>
+        <table>
+          <tr><td>Internal Area (BRA-I)</td><td><strong>166 m²</strong></td></tr>
+          <tr><td>Terraces/Balconies (TBA)</td><td>29 m²</td></tr>
+          <tr><td>Bedrooms</td><td>3</td></tr>
+          <tr><td>Bathrooms</td><td>2 (both need reno) + 1 WC</td></tr>
+          <tr><td>Year Built</td><td>1984</td></tr>
+          <tr><td>Energy Rating</td><td>F (Orange) 🔴</td></tr>
+          <tr><td>Ownership</td><td>Freehold (Selveier)</td></tr>
+          <tr><td>Plot</td><td>118 m² (owned)</td></tr>
+          <tr><td>Garage</td><td>Yes, integrated, 1 car</td></tr>
+          <tr><td>Views</td><td>Oslofjord panorama ✅</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🏠 Description</h3>
+      <p style="margin-bottom:1rem">Attractive <strong>townhouse over 3 levels</strong> with stunning views over the Oslofjord! Located above Leangbukta and Asker Marina. Living areas extensively upgraded in 2022.</p>
+      <p style="margin-bottom:0.5rem"><strong>Layout (3 levels):</strong></p>
+      <ul style="padding-left:1.5rem; color:var(--muted); font-size:0.9rem; line-height:1.8">
+        <li><strong>1st Floor (63 m²):</strong> Stue/kitchen (open-plan), 2 bedrooms with balcony access, bathroom. Terrace 19 m² + balcony 6 m².</li>
+        <li><strong>1st Basement (103 m²):</strong> Living room, bathroom, laundry, WC, entrance, garage. Balcony 4 m².</li>
+        <li><strong>2nd Basement:</strong> Entrance, laundry room, garage.</li>
+      </ul>
+      <div class="tags" style="margin-top:1rem">
+        <span class="tag good">Kitchen 2022</span>
+        <span class="tag good">New Windows 1F</span>
+        <span class="tag good">Heat Pump</span>
+        <span class="tag good">Oslofjord Views</span>
+        <span class="tag">Fireplace (pipe only)</span>
+        <span class="tag">Garage</span>
+        <span class="tag bad">Energy F</span>
+      </div>
+    </div>
+
+    <div class="detail-section full" style="margin-bottom:2rem">
+      <h3>🔧 Renovation History</h3>
+      <table>
+        <tr><th>Year</th><th>Work</th><th>By</th></tr>
+        <tr><td>2021–22</td><td>New windows on 1st floor (double-glazed)</td><td>Professional</td></tr>
+        <tr><td>2022</td><td>All living areas renovated, new kitchen, new interior staircase</td><td>Professional</td></tr>
+        <tr><td>2022</td><td>New fuse box + underfloor heating foil (Elektrikergruppen)</td><td>Professional</td></tr>
+        <tr><td>2022</td><td>New terrace doors + balcony sliding doors</td><td>Professional</td></tr>
+        <tr><td>2024</td><td>Heat pump electrical connection (Select Elektro)</td><td>Professional</td></tr>
+      </table>
+      <div class="flag red" style="margin-top:1rem"><span>⚠️</span> <strong>Not renovated:</strong> Both bathrooms, laundry room, basement windows, and drainage all remain from 1984.</div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-section">
+        <h3>⚠️ TG2 Issues (14 items)</h3>
+        <table>
+          <tr><td>Roof covering</td><td>Past half lifespan</td></tr>
+          <tr><td>Gutters/flashings</td><td>Age and wear</td></tr>
+          <tr><td>Wall cladding</td><td>No air gap, deep nails</td></tr>
+          <tr><td>Roof/loft</td><td>No access, age risk</td></tr>
+          <tr><td>Basement windows</td><td>1984, past lifespan</td></tr>
+          <tr><td>Skylights</td><td>Old, 1 punctured</td></tr>
+          <tr><td>Entry door</td><td>Past half lifespan</td></tr>
+          <tr><td>Below-ground rooms</td><td>Moisture risk</td></tr>
+          <tr><td>Drainage</td><td>Original 1984</td></tr>
+          <tr><td>Foundation</td><td>Diagonal crack</td></tr>
+          <tr><td>Terrain grading</td><td>Slopes toward house</td></tr>
+          <tr><td>Water pipes</td><td>Older copper</td></tr>
+          <tr><td>Ventilation</td><td>Natural only</td></tr>
+          <tr><td>Electrical</td><td>Old wiring (new box)</td></tr>
+        </table>
+      </div>
+      <div class="detail-section">
+        <h3 style="color:var(--red)">🔴 TG3 Issues (3 items)</h3>
+        <table>
+          <tr><td><strong>1st Floor Bath</strong></td><td>Must be fully renovated — mold, cracked tiles/silicone, poor drainage, unknown membrane</td></tr>
+          <tr><td><strong>Lower Floor Bath</strong></td><td>Must be fully renovated — same issues as above, past entire lifespan</td></tr>
+          <tr><td><strong>Laundry Room</strong></td><td>Must be renovated — unsealed pipe penetrations, holes in walls, damaged vinyl</td></tr>
+        </table>
+
+        <h3 style="margin-top:1.5rem">📋 Key Disclosures</h3>
+        <table>
+          <tr><td>Bathroom issues</td><td>Seller confirms: old baths, moisture damage, black spots</td></tr>
+          <tr><td>Punctured skylight</td><td>Leaks during snowmelt, not repaired</td></tr>
+          <tr><td>Unauthorized mods</td><td>Living room expanded + skylight — NOT approved ⚠️</td></tr>
+          <tr><td>Seller's insurance</td><td>NOT purchased ⚠️</td></tr>
+          <tr><td>Radon</td><td>NOT measured ⚠️</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="margin-top:2rem">
+      <div class="detail-section">
+        <h3>🔴 Red / Yellow Flags</h3>
+        <div class="flags">
+          <div class="flag red"><span>🔴</span> BOTH bathrooms + laundry need full renovation (3× TG3, ~300-600K+)</div>
+          <div class="flag red"><span>🔴</span> Energy rating F — worst of all prospects</div>
+          <div class="flag red"><span>🔴</span> Unauthorized building modifications — buyer assumes risk</div>
+          <div class="flag red"><span>⚠️</span> No seller's warranty insurance</div>
+          <div class="flag red"><span>⚠️</span> Drainage from 1984 — past entire lifespan</div>
+          <div class="flag red"><span>⚠️</span> Foundation crack, terrain slopes toward building</div>
+          <div class="flag red"><span>⚠️</span> Punctured skylight leaking, not repaired</div>
+          <div class="flag red"><span>⚠️</span> No radon measurement (basement bedrooms)</div>
+          <div class="flag red"><span>⚠️</span> Wall cladding: no air gap, no mouse barrier</div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <h3>🟢 Positives</h3>
+        <div class="flags">
+          <div class="flag green"><span>✅</span> Stunning Oslofjord views from elevated position</div>
+          <div class="flag green"><span>✅</span> Excellent Asker location — marina, beaches, sports</div>
+          <div class="flag green"><span>✅</span> Largest internal area (166 m²)</div>
+          <div class="flag green"><span>✅</span> Living areas renovated 2022 — kitchen, windows, staircase</div>
+          <div class="flag green"><span>✅</span> No property tax in Asker</div>
+          <div class="flag green"><span>✅</span> Top schools — Bondi + Risenga</div>
+          <div class="flag green"><span>✅</span> Well-run sameie with 1.27M reserves</div>
+          <div class="flag green"><span>✅</span> Freehold, no shared debt</div>
+          <div class="flag green"><span>✅</span> Garage + terraces with sun and views</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section full" style="margin-top:2rem">
+      <h3>👤 Agent</h3>
+      <p><strong>Didrik Brown Storskogen</strong> — Eiendomsmegler<br>
+      📞 454 15 814 · ✉️ Didrik.Storskogen@dnbeiendom.no<br>
+      DNB Eiendom AS, avd. Asker</p>
+    </div>
+  </div>
+
+</main>
+
+<footer style="text-align:center; padding:2rem; color:var(--muted); font-size:0.8rem; border-top:1px solid var(--border)">
+  House Hunter Dashboard · Data sourced from Norwegian sale prospect documents (salgsoppgaver) · Translated to English
+</footer>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    const labels = { 'overview': '📋 Properties', 'compare': '⚖️ Compare', 'detail-fredheimveien': '🏡 Fredheimveien 9E', 'detail-lokendalen': '🏡 Løkendalen 72', 'detail-leanglia': '🏡 Leanglia 16' };
+    document.querySelectorAll('nav button').forEach(b => {
+      if (b.textContent === labels[id]) b.classList.add('active');
+    });
+    window.scrollTo(0, 0);
+  }
+</script>
+
+</body>
+</html>
+
