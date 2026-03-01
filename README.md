@@ -45,5 +45,4 @@ houses/
 |---|----------|-------------|------|--------|
 | 1 | Fredheimveien 9E, Oslo (Høybråten) | 7,550,000 NOK | 146 m² | [fredheimveien-9e](fredheimveien-9e/) |
 | 2 | Løkendalen 72, Skedsmokorset (Lillestrøm) | 6,990,000 NOK | 147 m² | [lokendalen-72](lokendalen-72/) |
-| 3 | Glitreveien 3B, Oslo (Oppsal) | 7,490,000 NOK | 130 m² | [glitreveien-3b](glitreveien-3b/) |
-| 4 | Konvallveien 7, Lørenskog (Finstadjordet) | 7,390,000 NOK | 142 m² | [konvallveien-7](konvallveien-7/) |
+| 3 | Konvallveien 7, Lørenskog (Finstadjordet) | 7,390,000 NOK | 142 m² | [konvallveien-7](konvallveien-7/) |
