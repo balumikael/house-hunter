@@ -23,9 +23,9 @@ This repository contains Norwegian property sale prospects (prospekter) that we 
    - **🟢 Positives**: summarize highlights and selling points
 5. **Update `README.md`** — add the property to the prospects table
 6. **Update `comparison.md`** — add the new property as a column in all comparison tables
-7. **Update `docs/index.html`** — add the new property as a card on the overview page, a detail section, and a column in comparison tables. Keep the same structure/styling as existing entries.
-8. **Sync to Obsidian** — copy all `.md` files (summaries, comparison, README) to `/Users/balumicheal/obsidian/Personal/Houses/`, mirroring the folder structure (without PDFs)
-9. Do **NOT** generate PDF summaries — Markdown only
+7. **Sync to Obsidian** — copy all `.md` files (summaries, comparison, README) to `/Users/balumicheal/obsidian/Personal/Houses/`, mirroring the folder structure (without PDFs)
+8. Do **NOT** generate PDF summaries — Markdown only
+9. Do **NOT** update `docs/index.html` — website updates are done separately on request
 
 ## Folder structure
 
