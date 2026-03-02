@@ -1,6 +1,7 @@
 # 🏠 Lillehauger 5, Kolsås — Property Summary
 
 **Listing Status:** 🟢 Active  
+📅 **Viewing:** Saturday 8 March 2026, 14:00  
 **Finn.no:** [finnkode=448677341](https://www.finn.no/realestate/homes/ad.html?finnkode=448677341)  
 **DNB Eiendom:** [Listing](https://dnbeiendom.no/bolig/Akershus/B%C3%A6rum/Kolsas/Lillehauger-5/403260006)
 

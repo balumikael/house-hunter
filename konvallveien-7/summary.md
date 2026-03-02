@@ -1,6 +1,7 @@
 # Konvallveien 7 — Three-Floor Townhouse
 
-🟢 **Status: ACTIVE — For Sale**
+🟢 **Status: ACTIVE — For Sale**  
+📅 **Viewing:** Tuesday 4 March 2026, 17:30–18:30 (registration required)
 
 📍 **Konvallveien 7, 1475 Finstadjordet, Lørenskog**
 🔗 [Finn.no listing](https://www.finn.no/realestate/homes/ad.html?finnkode=452934926)

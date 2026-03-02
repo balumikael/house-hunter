@@ -1,6 +1,7 @@
 # Fredheimveien 9E — End-Unit Townhouse
 
-🟢 **Status: ACTIVE — For Sale**
+🔴 **Status: SOLD**  
+📅 **Viewing:** N/A (sold)
 
 📍 **Fredheimveien 9E, Oslo (Høybråten)**
 🔗 [Finn.no listing](https://www.finn.no/realestate/homes/ad.html?finnkode=451924626)
