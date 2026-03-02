@@ -46,3 +46,4 @@ houses/
 | 1 | Fredheimveien 9E, Oslo (Høybråten) | 7,550,000 NOK | 146 m² | [fredheimveien-9e](fredheimveien-9e/) |
 | 2 | Løkendalen 72, Skedsmokorset (Lillestrøm) | 6,990,000 NOK | 147 m² | [lokendalen-72](lokendalen-72/) |
 | 3 | Konvallveien 7, Lørenskog (Finstadjordet) | 7,390,000 NOK | 142 m² | [konvallveien-7](konvallveien-7/) |
+| 4 | Lillehauger 5, Bærum (Kolsås) | 7,990,000 NOK | 128 m² | [lillehauger-5](lillehauger-5/) |
